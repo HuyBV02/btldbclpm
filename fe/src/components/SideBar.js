@@ -36,7 +36,7 @@ const SideBar = () => {
                     </NavLink>
 
                     <NavLink
-                        to="/mo-so-tiet-kiem"
+                        to="/mo-so"
                         className={({ isActive }) =>
                             isActive
                                 ? "relative px-4 py-3 flex items-center space-x-4 rounded-lg text-white bg-gradient-to-r from-sky-600 to-cyan-400"
@@ -67,6 +67,7 @@ const SideBar = () => {
                     >
                         <i className="fas fa-user"></i>
                         <span>Sổ tiết kiệm</span>
+
                     </NavLink>
                 </div>
             </div>

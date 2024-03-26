@@ -9,10 +9,12 @@ import Navbar from "./components/Navbar";
 import VerifyCode from "./pages/VerifyCode";
 import SideBar from "./components/SideBar";
 import TinhLai1 from "./pages/TinhLai1";
+import TinhLai from "./pages/TinhLai";
 import { useEffect, useState } from "react";
 import SignUp from "./pages/SignUp";
 import ListSavingBook from "./pages/ListSavingBook";
 import SavingBookDetail from "./pages/SavingBookDetail";
+import OpenSavingsBook from "./pages/OpenSavingBook";
 
 function App() {
     const [userRes, setUserRes] = useState();
@@ -27,17 +29,7 @@ function App() {
         window.location.href = "/login";
     };
 
-    // const checkLogin = () => {
-    //     console.log("check");
-    //     if (
-    //         localStorage.getItem("isLogin") == undefined ||
-    //         localStorage.getItem("isLogin") == "false"
-    //     ) {
-    //         window.location.href = "/login";
-    //     }
-    // };
     useEffect(() => {
-        // checkLogin();
         setIsLogin(localStorage.getItem("isLogin"))
     }, [localStorage.getItem("isLogin")]);
 
@@ -51,7 +43,7 @@ function App() {
                         <LoginStaff userData={userData} isLogin={isLogin} />
                     }
                 />
-                <Route path="signup" element={<SignUp />} />
+                <Route path="/signup" element={<SignUp />} />
                 <Route path="/verify" element={<VerifyCode />} />
             </Routes>
 
@@ -66,7 +58,8 @@ function App() {
                         <Route path="/passbooks/:id" element={isLogin ? <SavingBookDetail /> : <Navigate to="/login"/>} />
 
                         <Route path="/tinh-lai" element={isLogin ? <TinhLai1 /> : <Navigate to="/login"/>} />
-                        <Route path="/*" element={isLogin ? <Home /> : <Navigate to="/login"/>} />
+                        <Route path="/mo-so" element={isLogin ? <OpenSavingsBook /> : <Navigate to="/login"/>} />
+                        {/* <Route path="/*" element={isLogin ? <Home /> : <Navigate to="/login"/>} /> */}
                     </Routes>
                 </div>
             </div>

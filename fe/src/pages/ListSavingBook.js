@@ -2,9 +2,13 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import moment from "moment";
 import { Navigate } from "react-router-dom";
+import TinhLai from "./TinhLai";
+import { Helmet } from "react-helmet";
 
 const ListSavingBook = () => {
     const [savingBook, setSavingBook] = useState();
+    const [isBookChoice, setIsBookChoice] = useState(false);
+    const [currentBookChoice, setCurrentBookChoice] = useState(null);
 
     useEffect(() => {
         axios
@@ -14,15 +18,20 @@ const ListSavingBook = () => {
 
     console.log(savingBook);
 
-    const handleView = (e) => {
+    const handleView = (item, e) => {
         e.preventDefault();
-        const formAction = document.getElementById("formAction");
-        formAction.setAttribute("action", `/passbooks/${e.target.dataset.id}`);
-        formAction.submit();
+        setCurrentBookChoice(item);
+        setIsBookChoice(true);
+        // const formAction = document.getElementById("formAction");
+        // formAction.setAttribute("action", `/passbooks/${e.target.dataset.id}`);
+        // formAction.submit();
     };
 
     return (
         <div>
+            <Helmet>
+                <title>Sổ tiết kiệm</title>
+            </Helmet>
             <form id="formAction" method="" action="">
                 <div class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 pr-10 lg:px-8">
                     <div class="align-middle rounded-tl-lg rounded-tr-lg inline-block w-full py-4 overflow-hidden bg-white shadow-lg px-12">
@@ -120,7 +129,9 @@ const ListSavingBook = () => {
                                             <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-500 text-sm leading-5">
                                                 <button
                                                     data-id={item.id}
-                                                    onClick={handleView}
+                                                    onClick={(e) =>
+                                                        handleView(item, e)
+                                                    }
                                                     class="px-5 py-2 border-blue-500 border text-blue-500 rounded transition duration-300 hover:bg-blue-700 hover:text-white focus:outline-none"
                                                 >
                                                     View Details
@@ -208,6 +219,54 @@ const ListSavingBook = () => {
                     </div>
                 </div>
             </form>
+
+            {isBookChoice ? (
+                <div
+                    id="static-modal"
+                    data-modal-backdrop="static"
+                    tabindex="-1"
+                    aria-hidden="true"
+                    className=" flex absolute top-0 left-0 right-0 bottom-0 z-50 justify-center items-center"
+                >
+                    <div class="relative p-8 w-3/4">
+                        <div class="relative bg-white rounded-lg shadow">
+                            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
+                                <h3 class="text-xl font-semibold text-gray-900">
+                                    Static modal
+                                </h3>
+                                <button
+                                    type="button"
+                                    onClick={() => setIsBookChoice(false)}
+                                    class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                                    data-modal-hide="static-modal"
+                                >
+                                    <svg
+                                        class="w-3 h-3"
+                                        aria-hidden="true"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 14 14"
+                                    >
+                                        <path
+                                            stroke="currentColor"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                                        />
+                                    </svg>
+                                    <span class="sr-only">Close modal</span>
+                                </button>
+                            </div>
+                            <div className="pb-5 px-5">
+                                <TinhLai />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            ) : (
+                <></>
+            )}
         </div>
     );
 };
