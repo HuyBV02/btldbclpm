@@ -1,17 +1,77 @@
-import './App.css';
-import { Route, Routes } from 'react-router-dom';
-import Home from './pages/Home';
-import About from './pages/About';
+import "./App.css";
+import { Navigate, Route, Routes } from "react-router-dom";
+import Home from "./pages/Home";
+import About from "./pages/About";
+import LoginStaff from "./pages/LoginStaff";
+import CusInfo from "./pages/CusInfo";
+import CusList from "./pages/CusList";
+import Navbar from "./components/Navbar";
+import VerifyCode from "./pages/VerifyCode";
+import SideBar from "./components/SideBar";
+import TinhLai1 from "./pages/TinhLai1";
+import { useEffect, useState } from "react";
+import SignUp from "./pages/SignUp";
+import ListSavingBook from "./pages/ListSavingBook";
+import SavingBookDetail from "./pages/SavingBookDetail";
 
 function App() {
-  return (
-    <div className="App">
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-      </Routes>
-    </div>
-  );
+    const [userRes, setUserRes] = useState();
+    const [userData, setUserData] = useState();
+    const [isLogin, setIsLogin] = useState(localStorage.getItem("isLogin") == 'true');
+
+    console.log(isLogin)
+
+    const handleLogout = () => {
+        localStorage.setItem("isLogin", false);
+        localStorage.setItem("token", null);
+        window.location.href = "/login";
+    };
+
+    // const checkLogin = () => {
+    //     console.log("check");
+    //     if (
+    //         localStorage.getItem("isLogin") == undefined ||
+    //         localStorage.getItem("isLogin") == "false"
+    //     ) {
+    //         window.location.href = "/login";
+    //     }
+    // };
+    useEffect(() => {
+        // checkLogin();
+        setIsLogin(localStorage.getItem("isLogin"))
+    }, [localStorage.getItem("isLogin")]);
+
+    return (
+        <div className="App">
+            <Navbar handleLogout={handleLogout} />
+            <Routes>
+                <Route
+                    path="/login"
+                    element={
+                        <LoginStaff userData={userData} isLogin={isLogin} />
+                    }
+                />
+                <Route path="signup" element={<SignUp />} />
+                <Route path="/verify" element={<VerifyCode />} />
+            </Routes>
+
+            <div className="flex justify-start">
+                <div className="w-[20%]">
+                    <SideBar />
+                </div>
+                <div className="w-[70%]">
+                    <Routes>
+                        <Route path="/" element={isLogin ? <Home /> : <Navigate to="/login"/>} />
+                        <Route path="/list-saving-book" element={isLogin ? <ListSavingBook /> : <Navigate to="/login"/>} />
+                        <Route path="/passbooks/:id" element={isLogin ? <SavingBookDetail /> : <Navigate to="/login"/>} />
+
+                        <Route path="/tinh-lai" element={isLogin ? <TinhLai1 /> : <Navigate to="/login"/>} />
+                        <Route path="/*" element={isLogin ? <Home /> : <Navigate to="/login"/>} />
+                    </Routes>
+                </div>
+            </div>
+        </div>
+    );
 }
 
 export default App;
