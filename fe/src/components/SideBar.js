@@ -32,7 +32,7 @@ const SideBar = () => {
                         }
                     >
                         <i className="fas fa-sign-out-alt"></i>
-                        <span>Trang chu</span>
+                        <span>Trang chủ</span>
                     </NavLink>
 
                     <NavLink

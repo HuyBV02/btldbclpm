@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { NavLink } from "react-router-dom";
 import axios from "axios";
+import { Helmet } from "react-helmet";
 
 const SignUp = () => {
     const [cccd, setCccd] = useState("");
@@ -8,6 +9,15 @@ const SignUp = () => {
     const [maPin, setMaPin] = useState("");
     const [soDienThoai, setSoDienThoai] = useState("");
     const [errors, setErrors] = useState({});
+
+    const firstInputRef = useRef(null);
+
+    // Sử dụng useEffect để đặt focus vào input đầu tiên khi component được tải
+    useEffect(() => {
+        if (firstInputRef.current) {
+            firstInputRef.current.focus();
+        }
+    }, []);
 
     const validateCccd = (value) => {
         const cccdPattern = /^[0-9]{12}$/;
@@ -133,6 +143,9 @@ const SignUp = () => {
 
     return (
         <div>
+            <Helmet>
+                <title>Đăng ký</title>
+            </Helmet>
             <div
                 className="relative min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 bg-gray-500 bg-no-repeat bg-cover relative items-center"
                 style={{
@@ -164,10 +177,11 @@ const SignUp = () => {
                         <input type="hidden" name="remember" value="true" />
                         <div className="relative">
                             <div className="absolute right-0 mt-4"></div>
-                            <label className="text-sm font-bold text-gray-700 tracking-wide">
+                            <label className="text-left text-sm font-bold text-gray-700 tracking-wide">
                                 CCCD
                             </label>
                             <input
+                                ref={firstInputRef}
                                 className="w-full text-base py-2 border-b border-gray-300 focus:outline-none focus:border-indigo-500"
                                 type="text"
                                 placeholder=""
@@ -184,7 +198,7 @@ const SignUp = () => {
                             )}
                         </div>
                         <div className="mt-8 content-center">
-                            <label className="text-sm font-bold text-gray-700 tracking-wide">
+                            <label className="text-left text-sm font-bold text-gray-700 tracking-wide">
                                 Số thẻ
                             </label>
                             <input
@@ -205,7 +219,7 @@ const SignUp = () => {
                         </div>
 
                         <div className="mt-8 content-center">
-                            <label className="text-sm font-bold text-gray-700 tracking-wide">
+                            <label className="text-left text-sm font-bold text-gray-700 tracking-wide">
                                 Mã PIN
                             </label>
                             <input
@@ -226,7 +240,7 @@ const SignUp = () => {
                         </div>
 
                         <div className="mt-8 content-center">
-                            <label className="text-sm font-bold text-gray-700 tracking-wide">
+                            <label className="text-left text-sm font-bold text-gray-700 tracking-wide">
                                 Số điện thoại
                             </label>
                             <input

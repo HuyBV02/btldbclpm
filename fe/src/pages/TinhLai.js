@@ -1,6 +1,17 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
+import { NavLink } from "react-router-dom";
+import moment from "moment";
 
-const TinhLai = () => {
+const TinhLai = ({ oneSavingBook, currentBookChoice }) => {
+    const firstInputRef = useRef(null);
+
+    // Sử dụng useEffect để đặt focus vào input đầu tiên khi component được tải
+    useEffect(() => {
+        if (firstInputRef.current) {
+            firstInputRef.current.focus();
+        }
+    }, []);
+
     return (
         <div>
             <div className=" mt-5 mx-2">
@@ -10,9 +21,8 @@ const TinhLai = () => {
                             <div>
                                 <p>Số dư</p>
                                 <h2 className="text-4xl font-bold text-gray-600">
-                                    50.365
+                                    {currentBookChoice.amount}
                                 </h2>
-                                <p>25.365 $</p>
                             </div>
                             <img
                                 src="https://www.emprenderconactitud.com/img/Wallet.png"
@@ -24,10 +34,13 @@ const TinhLai = () => {
 
                     <div className="bg-white p-4 rounded-lg xs:mb-4 max-w-full shadow-md lg:w-[65%]">
                         <div className="flex flex-wrap justify-between h-full">
-                            <div className="flex-1 bg-gradient-to-r from-cyan-400 to-cyan-600 rounded-lg flex flex-col items-center justify-center p-4 space-y-2 border border-gray-200 m-2">
+                            <NavLink
+                                to="rut-so"
+                                className="flex-1 bg-gradient-to-r from-cyan-400 to-cyan-600 rounded-lg flex flex-col items-center justify-center p-4 space-y-2 border border-gray-200 m-2"
+                            >
                                 <i className="fas fa-hand-holding-usd text-white text-4xl"></i>
                                 <p className="text-white">Rút sổ</p>
-                            </div>
+                            </NavLink>
 
                             {/* <div className="flex-1 bg-gradient-to-r from-cyan-400 to-cyan-600 rounded-lg flex flex-col items-center justify-center p-4 space-y-2 border border-gray-200 m-2">
                                 <i className="fas fa-exchange-alt text-white text-4xl"></i>
@@ -48,48 +61,66 @@ const TinhLai = () => {
                             <tr>
                                 <th className="px-4 py-2 text-left border-b-2 w-full">
                                     <h2 className="text-ml font-bold text-gray-600">
-                                        Tiền lãi
+                                        Chi tiết
                                     </h2>
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr className="border-b w-full">
+                            <tr className="border-b w-full flex">
                                 <td className="px-4 py-2 text-left align-top w-1/2">
                                     <div>
-                                        <h2>Comercio</h2>
-                                        <p>24/07/2023</p>
+                                        <h2>Ngày tạo</h2>
+                                        {/* <p>24/07/2023</p> */}
                                     </div>
                                 </td>
                                 <td className="px-4 py-2 text-right text-cyan-500 w-1/2">
                                     <p>
-                                        <span>150$</span>
+                                        <span>
+                                            {moment
+                                                .utc(currentBookChoice.createdAt)
+                                                .utcOffset(7)
+                                                .format("YYYY-MM-DD HH:mm:ss")}
+                                        </span>
                                     </p>
                                 </td>
                             </tr>
-                            <tr className="border-b w-full">
+                            <tr className="border-b w-full flex">
                                 <td className="px-4 py-2 text-left align-top w-1/2">
                                     <div>
-                                        <h2>Comercio</h2>
-                                        <p>24/06/2023</p>
+                                        <h2>Kì hạn</h2>
+                                        {/* <p>24/06/2023</p> */}
                                     </div>
                                 </td>
                                 <td className="px-4 py-2 text-right text-cyan-500 w-1/2">
                                     <p>
-                                        <span>15$</span>
+                                        <span>{currentBookChoice.term}</span>
                                     </p>
                                 </td>
                             </tr>
-                            <tr className="border-b w-full">
+                            <tr className="border-b w-full flex">
                                 <td className="px-4 py-2 text-left align-top w-1/2">
                                     <div>
-                                        <h2>Comercio</h2>
-                                        <p>02/05/2023</p>
+                                        <h2>Lãi suất</h2>
+                                        {/* <p>24/06/2023</p> */}
                                     </div>
                                 </td>
                                 <td className="px-4 py-2 text-right text-cyan-500 w-1/2">
                                     <p>
-                                        <span>50$</span>
+                                        <span>{currentBookChoice.interestRate}%</span>
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr className="border-b w-full flex">
+                                <td className="px-4 py-2 text-left align-top w-1/2">
+                                    <div>
+                                        <h2>Phương thức thanh toán</h2>
+                                        {/* <p>02/05/2023</p> */}
+                                    </div>
+                                </td>
+                                <td className="px-4 py-2 text-right text-cyan-500 w-1/2">
+                                    <p>
+                                        <span>{currentBookChoice.paymentMethod}</span>
                                     </p>
                                 </td>
                             </tr>

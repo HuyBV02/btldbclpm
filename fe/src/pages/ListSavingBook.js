@@ -7,25 +7,52 @@ import { Helmet } from "react-helmet";
 
 const ListSavingBook = () => {
     const [savingBook, setSavingBook] = useState();
+    const [oneSavingBook, setOneSavingBook] = useState();
     const [isBookChoice, setIsBookChoice] = useState(false);
-    const [currentBookChoice, setCurrentBookChoice] = useState(null);
+    const [currentBookChoice, setCurrentBookChoice] = useState(false);
+    // console.log(customer.id);
+    const idCustomer = localStorage.getItem("idCustomer");
+    const fullName = localStorage.getItem("nameCustomer");
 
     useEffect(() => {
         axios
-            .get(`http://localhost:8080/api/saving/customers/6/passbooks`)
+            .get(
+                `http://localhost:8080/api/saving/customers/${idCustomer}/passbooks`
+            )
             .then((response) => setSavingBook(response.data.data));
     }, []);
 
     console.log(savingBook);
 
+    // useEffect(() => {}, []);
     const handleView = (item, e) => {
         e.preventDefault();
         setCurrentBookChoice(item);
         setIsBookChoice(true);
-        // const formAction = document.getElementById("formAction");
-        // formAction.setAttribute("action", `/passbooks/${e.target.dataset.id}`);
-        // formAction.submit();
     };
+
+    console.log(currentBookChoice);
+
+    // const fetchOneSavingBook = async (id) => {
+    //     try {
+    //         const response = await axios?.get(
+    //             `http://localhost:8080/api/saving/customers/${idCustomer}/passbooks/${id}`
+    //         );
+    //         setOneSavingBook(response.data.data);
+    //     } catch (error) {
+    //         console.error("Error fetching saving book:", error);
+    //     }
+    // };
+
+    // console.log(currentBookChoice)
+
+    // useEffect(() => {
+    //     if (currentBookChoice) {
+    //         fetchOneSavingBook(currentBookChoice.id);
+    //     }
+    // }, [currentBookChoice]);
+
+    // console.log(oneSavingBook);
 
     return (
         <div>
@@ -93,129 +120,67 @@ const ListSavingBook = () => {
                                 </tr>
                             </thead>
                             <tbody class="bg-white">
-                                {savingBook?.map((item) => {
-                                    return (
-                                        <tr>
-                                            <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                                                <div class="flex items-center">
-                                                    <div>
-                                                        <div class="text-sm leading-5 text-gray-800">
-                                                            #{item.id}
+                                {savingBook?.length > 0 ? (
+                                    savingBook?.map((item) => {
+                                        return (
+                                            <tr>
+                                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                                                    <div class="flex items-center">
+                                                        <div>
+                                                            <div class="text-sm leading-5 text-gray-800">
+                                                                #{item.id}
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                                                <div class="text-sm leading-5 text-blue-900">
-                                                    {localStorage.getItem(
-                                                        "isLogin"
-                                                    )}
-                                                </div>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-no-wrap border-b text-blue-900 border-gray-500 text-sm leading-5">
-                                                {item.amount}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-no-wrap border-b text-blue-900 border-gray-500 text-sm leading-5">
-                                                {moment
-                                                    .utc(item.createdAt)
-                                                    .utcOffset(7)
-                                                    .format(
-                                                        "YYYY-MM-DD HH:mm:ss"
-                                                    )}
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
+                                                    <div class="text-sm leading-5 text-blue-900">
+                                                        {fullName}
+                                                    </div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-no-wrap border-b text-blue-900 border-gray-500 text-sm leading-5">
+                                                    {item?.amount}
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-no-wrap border-b text-blue-900 border-gray-500 text-sm leading-5">
+                                                    {moment
+                                                        .utc(item.createdAt)
+                                                        .utcOffset(7)
+                                                        .format(
+                                                            "YYYY-MM-DD HH:mm:ss"
+                                                        )}
 
-                                                {/* {item.createdAt} */}
-                                            </td>
+                                                    {/* {item.createdAt} */}
+                                                </td>
 
-                                            <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-500 text-sm leading-5">
-                                                <button
-                                                    data-id={item.id}
-                                                    onClick={(e) =>
-                                                        handleView(item, e)
-                                                    }
-                                                    class="px-5 py-2 border-blue-500 border text-blue-500 rounded transition duration-300 hover:bg-blue-700 hover:text-white focus:outline-none"
-                                                >
-                                                    View Details
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
+                                                <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-500 text-sm leading-5">
+                                                    <button
+                                                        data-id={item.id}
+                                                        onClick={(e) =>
+                                                            handleView(item, e)
+                                                        }
+                                                        class="px-5 py-2 border-blue-500 border text-blue-500 rounded transition duration-300 hover:bg-blue-700 hover:text-white focus:outline-none"
+                                                    >
+                                                        View Details
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })
+                                ) : (
+                                    <tr>
+                                        <td
+                                            colSpan="5"
+                                            class="px-6 py-4 whitespace-no-wrap border-b border-gray-500 text-center text-red-500"
+                                        >
+                                            <a href="/mo-so">
+                                                Không có dữ liệu. Vui lòng mở
+                                                sổ.
+                                            </a>
+                                        </td>
+                                    </tr>
+                                )}
                             </tbody>
                         </table>
-                        {/* <div class="sm:flex-1 sm:flex sm:items-center sm:justify-between mt-4 work-sans">
-                        <div>
-                            <p class="text-sm leading-5 text-blue-700">
-                                Showing
-                                <span class="font-medium">1</span>
-                                to
-                                <span class="font-medium">200</span>
-                                of
-                                <span class="font-medium">2000</span>
-                                results
-                            </p>
-                        </div>
-                        <div>
-                            <nav class="relative z-0 inline-flex shadow-sm">
-                                <div>
-                                    <a
-                                        href="#"
-                                        class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150"
-                                    >
-                                        <svg
-                                            class="h-5 w-5"
-                                            viewBox="0 0 20 20"
-                                            fill="currentColor"
-                                        >
-                                            <path
-                                                fill-rule="evenodd"
-                                                d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                                                clip-rule="evenodd"
-                                            />
-                                        </svg>
-                                    </a>
-                                </div>
-                                <div>
-                                    <a
-                                        href="#"
-                                        class="-ml-px relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-blue-700 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-tertiary active:text-gray-700 transition ease-in-out duration-150 hover:bg-tertiary"
-                                    >
-                                        1
-                                    </a>
-                                    <a
-                                        href="#"
-                                        class="-ml-px relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-blue-600 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-tertiary active:text-gray-700 transition ease-in-out duration-150 hover:bg-tertiary"
-                                    >
-                                        2
-                                    </a>
-                                    <a
-                                        href="#"
-                                        class="-ml-px relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm leading-5 font-medium text-blue-600 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-tertiary active:text-gray-700 transition ease-in-out duration-150 hover:bg-tertiary"
-                                    >
-                                        3
-                                    </a>
-                                </div>
-                                <div v-if="pagination.current_page < pagination.last_page">
-                                    <a
-                                        href="#"
-                                        class="-ml-px relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-100 active:text-gray-500 transition ease-in-out duration-150"
-                                        aria-label="Next"
-                                    >
-                                        <svg
-                                            class="h-5 w-5"
-                                            viewBox="0 0 20 20"
-                                            fill="currentColor"
-                                        >
-                                            <path
-                                                fill-rule="evenodd"
-                                                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                                                clip-rule="evenodd"
-                                            />
-                                        </svg>
-                                    </a>
-                                </div>
-                            </nav>
-                        </div>
-                    </div> */}
                     </div>
                 </div>
             </form>
@@ -232,7 +197,7 @@ const ListSavingBook = () => {
                         <div class="relative bg-white rounded-lg shadow">
                             <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
                                 <h3 class="text-xl font-semibold text-gray-900">
-                                    Static modal
+                                    Chi tiết sổ tiết kiệm
                                 </h3>
                                 <button
                                     type="button"
@@ -259,7 +224,9 @@ const ListSavingBook = () => {
                                 </button>
                             </div>
                             <div className="pb-5 px-5">
-                                <TinhLai />
+                                <TinhLai
+                                    currentBookChoice={currentBookChoice}
+                                />
                             </div>
                         </div>
                     </div>

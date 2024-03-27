@@ -1,5 +1,6 @@
 import React from "react";
 import Navbar from "../components/Navbar";
+import { Helmet } from "react-helmet";
 
 const Home = () => {
     const checkLogin = () => {
@@ -10,6 +11,10 @@ const Home = () => {
     };
     return (
         <div>
+            <Helmet>
+                <title>Trang chủ</title>
+                <meta name="description" content="Home" />
+            </Helmet>
             {/* <Navbar/> */}
             Home
         </div>
