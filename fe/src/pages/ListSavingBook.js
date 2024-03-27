@@ -5,11 +5,11 @@ import { Navigate } from "react-router-dom";
 import TinhLai from "./TinhLai";
 import { Helmet } from "react-helmet";
 
-const ListSavingBook = () => {
+const ListSavingBook = ({currentBookChoice, setCurrentBookChoice}) => {
     const [savingBook, setSavingBook] = useState();
     const [oneSavingBook, setOneSavingBook] = useState();
     const [isBookChoice, setIsBookChoice] = useState(false);
-    const [currentBookChoice, setCurrentBookChoice] = useState(false);
+    // const [currentBookChoice, setCurrentBookChoice] = useState(false);
     // console.log(customer.id);
     const idCustomer = localStorage.getItem("idCustomer");
     const fullName = localStorage.getItem("nameCustomer");

@@ -12,6 +12,8 @@ const TinhLai = ({ oneSavingBook, currentBookChoice }) => {
         }
     }, []);
 
+    // console.log(currentBookChoice.id)
+
     return (
         <div>
             <div className=" mt-5 mx-2">
@@ -35,7 +37,10 @@ const TinhLai = ({ oneSavingBook, currentBookChoice }) => {
                     <div className="bg-white p-4 rounded-lg xs:mb-4 max-w-full shadow-md lg:w-[65%]">
                         <div className="flex flex-wrap justify-between h-full">
                             <NavLink
-                                to="rut-so"
+                                to={{
+                                    pathname: "rut-so",
+                                    state: { bookCode: currentBookChoice.id },
+                                }}
                                 className="flex-1 bg-gradient-to-r from-cyan-400 to-cyan-600 rounded-lg flex flex-col items-center justify-center p-4 space-y-2 border border-gray-200 m-2"
                             >
                                 <i className="fas fa-hand-holding-usd text-white text-4xl"></i>
@@ -78,7 +83,9 @@ const TinhLai = ({ oneSavingBook, currentBookChoice }) => {
                                     <p>
                                         <span>
                                             {moment
-                                                .utc(currentBookChoice.createdAt)
+                                                .utc(
+                                                    currentBookChoice.createdAt
+                                                )
                                                 .utcOffset(7)
                                                 .format("YYYY-MM-DD HH:mm:ss")}
                                         </span>
@@ -107,7 +114,9 @@ const TinhLai = ({ oneSavingBook, currentBookChoice }) => {
                                 </td>
                                 <td className="px-4 py-2 text-right text-cyan-500 w-1/2">
                                     <p>
-                                        <span>{currentBookChoice.interestRate}%</span>
+                                        <span>
+                                            {currentBookChoice.interestRate}%
+                                        </span>
                                     </p>
                                 </td>
                             </tr>
@@ -120,7 +129,9 @@ const TinhLai = ({ oneSavingBook, currentBookChoice }) => {
                                 </td>
                                 <td className="px-4 py-2 text-right text-cyan-500 w-1/2">
                                     <p>
-                                        <span>{currentBookChoice.paymentMethod}</span>
+                                        <span>
+                                            {currentBookChoice.paymentMethod}
+                                        </span>
                                     </p>
                                 </td>
                             </tr>

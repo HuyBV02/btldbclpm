@@ -24,6 +24,8 @@ function App() {
         localStorage.getItem("isLogin") == "true"
     );
 
+    const [currentBookChoice, setCurrentBookChoice] = useState(false);
+
     // const [idCustomer, setIdCustomer] = useState();
     // const [nameCustomer, setNameCustomer] = useState();
 
@@ -93,7 +95,7 @@ function App() {
                             path="/list-saving-book"
                             element={
                                 isLogin ? (
-                                    <ListSavingBook />
+                                    <ListSavingBook currentBookChoice={currentBookChoice} setCurrentBookChoice={setCurrentBookChoice} />
                                 ) : (
                                     <Navigate to="/login" />
                                 )
@@ -103,7 +105,7 @@ function App() {
                             path="/list-saving-book/rut-so"
                             element={
                                 isLogin ? (
-                                    <RutSo />
+                                    <RutSo currentBookChoice={currentBookChoice}/>
                                 ) : (
                                     <Navigate to="/login" />
                                 )
