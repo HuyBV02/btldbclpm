@@ -28,12 +28,13 @@ const OpenSavingsBook = () => {
         9: 5.5,
         10: 5.5,
         11: 5.5,
-        12: 6.4,
+        12: 5.5,
         13: 6.4,
+        14: 6.4,
         15: 6.4,
+        16: 6.4,
+        17: 6.4,
         18: 6.4,
-        24: 6.4,
-        36: 6.4,
     };
 
     const handleChange = (e) => {
@@ -192,7 +193,7 @@ const OpenSavingsBook = () => {
                 <form onSubmit={handleSubmit} className="form-container">
                     {showSuccessMessage && (
                         <div className="success-message">
-                            Dữ liệu đã được đẩy thành công!
+                            Mở sổ tiết kiệm thành công
                         </div>
                     )}
                     {errorMessage && (
