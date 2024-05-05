@@ -158,7 +158,7 @@ const ListSavingBook = ({currentBookChoice, setCurrentBookChoice}) => {
                                                         onClick={(e) =>
                                                             handleView(item, e)
                                                         }
-                                                        class="px-5 py-2 border-blue-500 border text-blue-500 rounded transition duration-300 hover:bg-blue-700 hover:text-white focus:outline-none"
+                                                        class="px-5 py-2 border-blue-500 border text-black rounded transition duration-300 hover:bg-blue-700 hover:text-white focus:outline-none"
                                                     >
                                                         View Details
                                                     </button>
