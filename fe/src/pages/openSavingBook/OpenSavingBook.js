@@ -14,6 +14,9 @@ const OpenSavingsBook = (props) => {
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
+
+    const idCustomer = localStorage.getItem("idCustomer");
+
     const termInterestRates = {
 
         '1': 4.50,
@@ -78,14 +81,19 @@ const OpenSavingsBook = (props) => {
             }
             const dataa = {
                 "savingProductId": formData.savingProductId,
-                "paymentMethod": formData.paymentMethod, // Thêm trường chọn loại thanh toán
+                "paymentMethod": formData.paymentMethod,    
                 "amount": formData.amount,
                 "createdAt": formData.createdAt,
             }
             console.log(dataa)
             try {
                 // Gửi dữ liệu đến API
-                const response = await axios.post('http://localhost:8080/api/saving/customers/8/passbooks', dataa);
+                const response = await axios.post(`http://localhost:8080/api/saving/customers/passbooks`, dataa, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                });
+                // const response = await axios.post(`http://localhost:8080/api/saving/customers/${idCustomer}/passbooks`, dataa);
                 console.log(response.data);
                 setShowSuccessMessage(true);
                 setTimeout(() => {

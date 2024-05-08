@@ -1,24 +1,27 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import moment from "moment";
-import { Navigate } from "react-router-dom";
+// import { Navigate } from "react-router-dom";
 import TinhLai from "./TinhLai";
 import { Helmet } from "react-helmet";
 
-const ListSavingBook = ({currentBookChoice, setCurrentBookChoice}) => {
+const ListSavingBook = ({ currentBookChoice, setCurrentBookChoice }) => {
     const [savingBook, setSavingBook] = useState();
-    const [oneSavingBook, setOneSavingBook] = useState();
+    // const [oneSavingBook, setOneSavingBook] = useState();
     const [isBookChoice, setIsBookChoice] = useState(false);
-    // const [currentBookChoice, setCurrentBookChoice] = useState(false);
-    // console.log(customer.id);
+
     const idCustomer = localStorage.getItem("idCustomer");
     const fullName = localStorage.getItem("nameCustomer");
 
+    console.log(idCustomer);
+
     useEffect(() => {
         axios
-            .get(
-                `http://localhost:8080/api/saving/customers/${idCustomer}/passbooks`
-            )
+            .get(`http://localhost:8080/api/saving/customers/passbooks`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            })
             .then((response) => setSavingBook(response.data.data));
     }, []);
 
@@ -32,27 +35,6 @@ const ListSavingBook = ({currentBookChoice, setCurrentBookChoice}) => {
     };
 
     console.log(currentBookChoice);
-
-    // const fetchOneSavingBook = async (id) => {
-    //     try {
-    //         const response = await axios?.get(
-    //             `http://localhost:8080/api/saving/customers/${idCustomer}/passbooks/${id}`
-    //         );
-    //         setOneSavingBook(response.data.data);
-    //     } catch (error) {
-    //         console.error("Error fetching saving book:", error);
-    //     }
-    // };
-
-    // console.log(currentBookChoice)
-
-    // useEffect(() => {
-    //     if (currentBookChoice) {
-    //         fetchOneSavingBook(currentBookChoice.id);
-    //     }
-    // }, [currentBookChoice]);
-
-    // console.log(oneSavingBook);
 
     return (
         <div>

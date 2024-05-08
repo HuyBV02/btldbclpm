@@ -1,9 +1,15 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { NavLink } from "react-router-dom";
 import moment from "moment";
+import axios from "axios";
 
-const TinhLai = ({ oneSavingBook, currentBookChoice }) => {
+const TinhLai = ({ currentBookChoice }) => {
     const firstInputRef = useRef(null);
+
+    // const [pass, setPass] = useState();
+    const [tax, setTax] = useState();
+
+    // console.log(data);
 
     // Sử dụng useEffect để đặt focus vào input đầu tiên khi component được tải
     useEffect(() => {
@@ -12,7 +18,39 @@ const TinhLai = ({ oneSavingBook, currentBookChoice }) => {
         }
     }, []);
 
-    // console.log(currentBookChoice.id)
+    // useEffect(() => {
+    //     axios
+    //         .get(
+    //             `http://localhost:8080/api/saving/customers/passbooks/${currentBookChoice.id}`
+    //         )
+    //         .then((response) => setPass(response.data.data));
+    // }, []);
+
+    // console.log(pass);
+
+    function chuyenDoiNgayThang(isoDateString) {
+        const date = new Date(isoDateString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+    }
+
+    // console.log(data);
+    useEffect(() => {
+        axios
+            .post("http://localhost:8080/api/saving/interest", {
+                amount: `${currentBookChoice?.amount}`,
+                interestRate: `${currentBookChoice?.interestRate}`,
+                paymentMethod: `${currentBookChoice?.paymentMethod}`,
+                term: `${currentBookChoice?.term}`,
+                startDate: chuyenDoiNgayThang(currentBookChoice?.createdAt),
+                endDate: moment().format("YYYY-MM-DD"),
+            })
+            .then((response) => setTax(response.data.data.interest))
+            .catch((error) => console.log(error));
+    }, []);
+    console.log(tax)
 
     return (
         <div>
@@ -34,7 +72,19 @@ const TinhLai = ({ oneSavingBook, currentBookChoice }) => {
                         </div>
                     </div>
 
-                    <div className="bg-white p-4 rounded-lg xs:mb-4 max-w-full shadow-md lg:w-[65%]">
+                    <div className="bg-white md:p-2 p-6 rounded-lg border border-gray-200 mb-4 lg:mb-0 shadow-md lg:w-[35%]">
+                        <div className="flex justify-center items-center space-x-5 h-full">
+                            <div>
+                                <p>Lãi</p>
+                                <h2 className="text-4xl font-bold text-gray-600">
+                                    {tax}
+                                </h2>
+                            </div>
+                            
+                        </div>
+                    </div>
+
+                    <div className="bg-white p-4 rounded-lg xs:mb-4 max-w-full shadow-md lg:w-[35%]">
                         <div className="flex flex-wrap justify-between h-full">
                             <NavLink
                                 to={{

@@ -1,142 +1,146 @@
-import React, { useState, useRef } from 'react';
-import axios from 'axios'; // Import Axios
-import './Tinhlaii.css';
+import React, { useState, useRef } from "react";
+import axios from "axios"; // Import Axios
+import "./Tinhlaii.css";
 
 function TinhLai1() {
-    const [amount, setAmount] = useState('');
-    const [paymentMethod, setPaymentMethod] = useState('');
-    const [term, setTerm] = useState('');
-    const [selectedPackage, setSelectedPackage] = useState('');
+    const [amount, setAmount] = useState("");
+    const [paymentMethod, setPaymentMethod] = useState("");
+    const [term, setTerm] = useState("");
+    const [selectedPackage, setSelectedPackage] = useState("");
     const [interestRates, setInterestRates] = useState({
-        '1': 4.50,
-        '2': 4.50,
-        '3': 4.60,
-        '4': 4.60,
-        '5': 4.60,
-        '6': 5.50,
-        '7': 5.50,
-        '8': 5.50,
-        '9': 5.50,
-        '10': 5.50,
-        '11': 5.50,
-        '12': 6.40,
-        '13': 6.40,
-        '15': 6.40,
-        '18': 6.40,
-        '24': 6.40,
-        '36': 6.40,
-        '37': 1.00,
+        1: 4.5,
+        2: 4.5,
+        3: 4.6,
+        4: 4.6,
+        5: 4.6,
+        6: 5.5,
+        7: 5.5,
+        8: 5.5,
+        9: 5.5,
+        10: 5.5,
+        11: 5.5,
+        12: 6.4,
+        13: 6.4,
+        15: 6.4,
+        18: 6.4,
+        24: 6.4,
+        36: 6.4,
+        37: 1.0,
     });
-    const [startDate, setStartDate] = useState('');
-    const [endDate, setEndDate] = useState('');
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
     const [resultData, setResultData] = useState(null); // State để lưu trữ dữ liệu trả về từ API
     const [errorMessages, setErrorMessages] = useState({});
-    const [errorSotien, setErrorSotien] = useState('');
-    const [errorKyhan, setErrorKyhan] = useState('');
-    const [errorNgaydau, setErrorNgaydau] = useState('');
-    const [errorNgaycuoi, setErrorNgaycuoi] = useState('');
-    const [errorThanhtoan, setErrorThanhtoan] = useState('');
-    const [errorSoNgayThanhtoan, setErrorSoNgayThanhtoan] = useState('');
+    const [errorSotien, setErrorSotien] = useState("");
+    const [errorKyhan, setErrorKyhan] = useState("");
+    const [errorNgaydau, setErrorNgaydau] = useState("");
+    const [errorNgaycuoi, setErrorNgaycuoi] = useState("");
+    const [errorThanhtoan, setErrorThanhtoan] = useState("");
+    const [errorSoNgayThanhtoan, setErrorSoNgayThanhtoan] = useState("");
 
     // Tạo một ref để lưu trữ tham chiếu đến nút tính toán
     const calculateButtonRef = useRef(null);
 
+    console.log(startDate)
+
     const handlePackageChange = (event) => {
         setSelectedPackage(event.target.value);
-        console.log(event.target.value)
+        console.log(event.target.value);
         setTerm(event.target.value); // Update term when selectedPackage changes
     };
 
     const handleDateChange = (value, setter) => {
         // Chuyển đổi ngày sang định dạng yyyy-mm-dd
-        const formattedDate = new Date(value).toISOString().split('T')[0];
+        const formattedDate = new Date(value).toISOString().split("T")[0];
         setter(formattedDate);
     };
 
     const handleChange = (e) => {
         const { id, value } = e.target;
         let newValue = value;
-        
-        if (id === 'amount') {
+
+        if (id === "amount") {
             // Loại bỏ tất cả các ký tự không phải là số
-            newValue = value.replace(/\D/g, '');
+            newValue = value.replace(/\D/g, "");
         }
-    
+
         // Tiếp tục xử lý giá trị mới cho các trường khác nếu cần
-    
+
         // Cập nhật state
-        if (id === 'amount') {
+        if (id === "amount") {
             setAmount(newValue);
         }
-    }
+    };
 
     const handleCalculate = async () => {
-
         if (!amount) {
-            setErrorSotien('Vui lòng nhập số tiền gửi!');
-        }
-        else{
+            setErrorSotien("Vui lòng nhập số tiền gửi!");
+        } else {
             setErrorSotien("");
         }
 
         if (!paymentMethod) {
-            setErrorThanhtoan('Vui lòng chọn phương thức thanh toán!');
-        }
-        else{
+            setErrorThanhtoan("Vui lòng chọn phương thức thanh toán!");
+        } else {
             setErrorThanhtoan("");
         }
 
         if (!term) {
-            setErrorKyhan('Vui lòng chọn kỳ hạn!');
-        }
-        else{
+            setErrorKyhan("Vui lòng chọn kỳ hạn!");
+        } else {
             setErrorKyhan("");
         }
 
         if (!startDate) {
-            setErrorNgaydau('Vui lòng chọn ngày bắt đầu!')
+            setErrorNgaydau("Vui lòng chọn ngày bắt đầu!");
+        } else {
+            setErrorNgaydau("");
         }
-        else{
-            setErrorNgaydau('')
-        }
-        
 
         if (!endDate) {
-            setErrorNgaycuoi('Vui lòng chọn ngày kết thúc.');
-        }
-        else{
+            setErrorNgaycuoi("Vui lòng chọn ngày kết thúc.");
+        } else {
             setErrorNgaycuoi("");
         }
-        if(startDate && endDate &&  startDate > endDate){
-            setErrorSoNgayThanhtoan('Ngày kết thúc phải sau ngày bắt đầu!')
-        }
-        else{
-            setErrorSoNgayThanhtoan('')
+        if (startDate && endDate && startDate > endDate) {
+            setErrorSoNgayThanhtoan("Ngày kết thúc phải sau ngày bắt đầu!");
+        } else {
+            setErrorSoNgayThanhtoan("");
         }
         setResultData(null);
-        if (amount && paymentMethod && term && startDate && endDate &&  startDate <= endDate) {
+        if (
+            amount &&
+            paymentMethod &&
+            term &&
+            startDate &&
+            endDate &&
+            startDate <= endDate
+        ) {
             try {
-                const response = await axios.post('http://localhost:8080/api/saving/interest', {
-                    amount,
-                    interestRate: interestRates[selectedPackage],
-                    paymentMethod,
-                    term,
-                    startDate,
-                    endDate,
-                });
+                const response = await axios.post(
+                    "http://localhost:8080/api/saving/interest",
+                    {
+                        amount,
+                        interestRate: interestRates[selectedPackage],
+                        paymentMethod,
+                        term,
+                        startDate,
+                        endDate,
+                    }
+                );
 
                 // Lưu trữ dữ liệu trả về từ API vào state
                 setResultData(response.data.data);
                 console.log(response.data.data); // Log response from the API
             } catch (error) {
-                console.error('Error:', error);
+                console.error("Error:", error);
             }
         }
     };
 
     // Xử lý sự kiện Enter
     const handleEnterPress = (e) => {
-        if (e.key === 'Enter') {
+        if (e.key === "Enter") {
             // Focus vào nút tính toán
             calculateButtonRef.current.focus();
             // Gọi hàm xử lý tính lãi
@@ -148,13 +152,25 @@ function TinhLai1() {
         <div className="Tinhlai">
             <div className="input-group">
                 <label htmlFor="amount">Số tiền gửi:</label>
-                <p className='error-messagess' > {errorSotien}</p>
-                <input className='input-nhap' type="text" id="amount" value={amount} onChange={(e) => handleChange(e)} onKeyPress={handleEnterPress} />
+                <p className="error-messagess"> {errorSotien}</p>
+                <input
+                    className="input-nhap"
+                    type="text"
+                    id="amount"
+                    value={amount}
+                    onChange={(e) => handleChange(e)}
+                    onKeyPress={handleEnterPress}
+                />
             </div>
             <div className="input-group">
                 <label htmlFor="paymentMethod">Phương thức thanh toán:</label>
-                <p className='error-messagess' > {errorThanhtoan}</p>
-                <select id="paymentMethod" value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)} onKeyPress={handleEnterPress}>
+                <p className="error-messagess"> {errorThanhtoan}</p>
+                <select
+                    id="paymentMethod"
+                    value={paymentMethod}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    onKeyPress={handleEnterPress}
+                >
                     <option value="">Phương thức thanh toán </option>
                     <option value="1">Nhập gốc </option>
                     <option value="2">Lấy lãi </option>
@@ -162,8 +178,13 @@ function TinhLai1() {
             </div>
             <div className="input-group">
                 <label htmlFor="term">Kỳ hạn:</label>
-                <p className='error-messagess' > {errorKyhan}</p>
-                <select id="term" value={term} onChange={handlePackageChange} onKeyPress={handleEnterPress}>
+                <p className="error-messagess"> {errorKyhan}</p>
+                <select
+                    id="term"
+                    value={term}
+                    onChange={handlePackageChange}
+                    onKeyPress={handleEnterPress}
+                >
                     <option value="">Chọn kỳ hạn</option>
                     <option value="37">Không kỳ hạn</option>
                     <option value="1">1 tháng</option>
@@ -185,26 +206,54 @@ function TinhLai1() {
                     <option value="17">36 tháng</option>
                 </select>
             </div>
-            {selectedPackage !== 'non-term' && (
+            {selectedPackage !== "non-term" && (
                 <div className="input-group">
                     <label htmlFor="interestRate">Lãi suất (%/năm )</label>
-                    <input className='input-nhap' type="number" id="interestRate" value={interestRates[selectedPackage]} readOnly />
+                    <input
+                        className="input-nhap"
+                        type="number"
+                        id="interestRate"
+                        value={interestRates[selectedPackage]}
+                        readOnly
+                    />
                 </div>
             )}
             <div className="input-group">
                 <label htmlFor="startDate">Ngày bắt đầu:</label>
-                <p className='error-messagess' > {errorNgaydau}</p>
-                <input className='input-nhap' type="date" id="startDate" value={startDate} onChange={(e) => handleDateChange(e.target.value, setStartDate)} onKeyPress={handleEnterPress} />
+                <p className="error-messagess"> {errorNgaydau}</p>
+                <input
+                    className="input-nhap"
+                    type="date"
+                    id="startDate"
+                    value={startDate}
+                    onChange={(e) =>
+                        handleDateChange(e.target.value, setStartDate)
+                    }
+                    onKeyPress={handleEnterPress}
+                />
             </div>
             <div className="input-group">
                 <label htmlFor="endDate">Ngày kết thúc:</label>
-                <p className='error-messagess' > {errorNgaycuoi}</p>
-                <p className='error-messagess' > {errorSoNgayThanhtoan}</p>
+                <p className="error-messagess"> {errorNgaycuoi}</p>
+                <p className="error-messagess"> {errorSoNgayThanhtoan}</p>
                 <input
-                className='input-nhap'
-                type="date" id="endDate" value={endDate} onChange={(e) => handleDateChange(e.target.value, setEndDate)} onKeyPress={handleEnterPress} />
+                    className="input-nhap"
+                    type="date"
+                    id="endDate"
+                    value={endDate}
+                    onChange={(e) =>
+                        handleDateChange(e.target.value, setEndDate)
+                    }
+                    onKeyPress={handleEnterPress}
+                />
             </div>
-            <button className='btn-submit' ref={calculateButtonRef} onClick={handleCalculate}>Tính toán</button>
+            <button
+                className="btn-submit"
+                ref={calculateButtonRef}
+                onClick={handleCalculate}
+            >
+                Tính toán
+            </button>
             {/* Hiển thị kết quả nếu có */}
             {resultData && (
                 <div className="result">

@@ -31,15 +31,24 @@ function RutSo({ currentBookChoice }) {
 
         console.log(formData);
 
+        const accessToken = localStorage.getItem("token");
+        const config = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+
+                "Custom-Header": "Custom-Value",
+            },
+        };
+
         try {
             const response = await axios.post(
-                `http://localhost:8080/api/saving/customers/${localStorage.getItem(
-                    "idCustomer"
-                )}/passbooks/${currentBookChoice.id}/withdraw`,
-                formData
+                `http://localhost:8080/api/saving/customers/passbooks/${currentBookChoice.id}/withdraw`,
+                formData,
+                config
             );
             if (response.data.message === "Success") {
                 setShowModal(true);
+                console.log(response.data.data.shortTokenRecip)
                 setTokenVerify(response.data.data.shortTokenRecip);
             }
             console.log(response.data);
@@ -68,35 +77,32 @@ function RutSo({ currentBookChoice }) {
         };
     }, []);
 
-    // const accessToken = localStorage.getItem("token");
-    const config = {
-        headers: {
-            Authorization: `Bearer ${tokenVerify}`,
-            "Custom-Header": "Custom-Value",
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
-        },
-    };
-
     console.log(code);
     const handleSubmitCode = async (e) => {
         e.preventDefault();
 
+        const accessToken = localStorage.getItem("token");
+
+        const config = {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+                ShortToken: `${tokenVerify}`,
+            },
+        };
+
         try {
             const response = await axios.post(
-                `http://localhost:8080/api/saving/customers/${localStorage.getItem(
-                    "idCustomer"
-                )}/passbooks/${currentBookChoice.id}/verify`,
-                {"code":code} ,
+                `http://localhost:8080/api/saving/customers/passbooks/${currentBookChoice.id}/verify`,
+                { code: code },
                 config
             );
             if (response.data.message === "Success") {
+                // Redirect to home page
+                window.location.href = "/list-saving-book";
             }
             console.log("Response:", response.data);
-            // Xử lý response ở đây (nếu cần)
         } catch (error) {
             console.error("Error:", error);
-            // Xử lý lỗi ở đây (nếu cần)
         }
     };
 

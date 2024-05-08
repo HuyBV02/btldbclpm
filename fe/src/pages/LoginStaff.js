@@ -7,13 +7,18 @@ const LoginStaff = ({ isLogin }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState({});
+    const [errorsEmail, setErrorsEmail] = useState([]);
+    const [errorsPassword, setErrorsPassword] = useState([]);
+    const [isUsert, setIsUser] = useState(false);
+    const [isPassword, setIsPassword] = useState(false);
+    const [errorTong, setErrorTong] = useState("");
 
     const setIsLogin = () => {
         localStorage.setItem("isLogin", true);
     };
 
     const firstInputRef = useRef(null);
-
+    const calculateButtonRef = useRef(null);
     // Sử dụng useEffect để đặt focus vào input đầu tiên khi component được tải
     useEffect(() => {
         if (firstInputRef.current) {
@@ -22,89 +27,105 @@ const LoginStaff = ({ isLogin }) => {
     }, []);
 
     console.log({ email, password });
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const config = {
-            headers: {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods":
-                    "GET,PUT,POST,DELETE,PATCH,OPTIONS",
-            },
-        };
-
-        try {
-            // Gửi yêu cầu đăng nhập đến API
-            const response = await axios.post(
-                "http://localhost:8080/api/saving/login",
-                {
-                    username: email,
-                    password,
-                },
-                config
-            );
-
-            console.log(response);
-            setIsLogin();
-            // Lưu trữ token vào localStorage
-            localStorage.setItem("token", response.data.data.token);
-            // localStorage.setItem("isLogin", true);
-
-            window.location.href = "/";
-        } catch (error) {
-            console.error("Đăng nhập không thành công", error);
+    const handleChangeEmail = (e) => {
+        let value = e.target.value;
+        value = value.replace(/[^a-zA-Z0-9]/g, "");
+        value = value.slice(0, 20);
+        if (value.length <= 6) {
+            setErrorsEmail("Uesname phải có tối thiểu 6 kí tự");
+            setIsUser(false);
+        } else {
+            setErrorsEmail("");
         }
+        if (value.length >= 6) setIsUser(true);
+        setEmail(value);
     };
-
-    const validatePassword = (value) => {
-        const minLength = 8;
+    const handleChangePassword = (e) => {
+        let value = e.target.value;
+        value = value.replace(/[^a-zA-Z0-9]/g, "");
+        value = value.slice(0, 20);
+        // Kiểm tra độ dài tối thiểu là 6 ký tự
+        const isLengthValid = value.length >= 6;
+        // Kiểm tra có ít nhất một ký tự in hoa
         const hasUppercase = /[A-Z]/.test(value);
+        // Kiểm tra có ít nhất một ký tự số
         const hasNumber = /[0-9]/.test(value);
 
-        let errorMessage = "";
+        // Nếu mật khẩu không đáp ứng yêu cầu
+        if (!isLengthValid || !hasUppercase || !hasNumber) {
+            // Tạo một mảng để chứa các thông báo lỗi
+            let errorMessages = [];
 
-        if (value.length < minLength) {
-            errorMessage = "Mật khẩu không hợp lệ (tối thiểu 8 kí tự)";
-        } else if (!hasUppercase) {
-            errorMessage = "Mật khẩu không hợp lệ (phải chứa kí tự in hoa)";
-        } else if (!hasNumber) {
-            errorMessage = "Mật khẩu không hợp lệ (phải chứa kí tự số)";
+            // Kiểm tra từng yêu cầu và thêm thông báo lỗi tương ứng vào mảng
+            if (!isLengthValid) {
+                setIsPassword(false);
+                errorMessages.push("Mật khẩu phải chứa ít nhất 6 ký tự");
+            }
+            if (!hasUppercase) {
+                setIsPassword(false);
+                errorMessages.push("Mật khẩu phải chứa ít nhất 1 ký tự in hoa");
+            }
+            if (!hasNumber) {
+                setIsPassword(false);
+                errorMessages.push("Mật khẩu phải chứa ít nhất 1 ký tự số");
+            }
+
+            // Cập nhật state errors với mảng thông báo lỗi
+            setErrorsPassword(errorMessages.join(", "));
+        } else {
+            // Nếu mật khẩu đáp ứng yêu cầu, xóa thông báo lỗi
+            setErrorsPassword("");
         }
-
-        return errorMessage;
-    };
-
-    const validateUsername = (value) => {
-        const minLength = 8;
-        return value.length < minLength
-            ? "Tên đăng nhập phải ít nhất 8 kí tự!"
-            : "";
-    };
-
-    const handleBlur = (field, value) => {
-        let newErrors = { ...errors };
-
-        switch (field) {
-            case "email":
-                newErrors.email = !value
-                    ? "Vui lòng nhập tên đăng nhập!"
-                    : validateUsername(value);
-                break;
-
-            case "password":
-                newErrors.password = !value
-                    ? "Vui lòng nhập mật khẩu!"
-                    : validatePassword(value);
-                break;
-
-            default:
-                break;
+        if (isLengthValid && hasUppercase && hasNumber) {
+            setIsPassword(true);
         }
-
-        setErrors(newErrors);
+        setPassword(value);
     };
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (isUsert && isPassword) {
+            const config = {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Methods":
+                        "GET,PUT,POST,DELETE,PATCH,OPTIONS",
+                },
+            };
 
+            try {
+                // Gửi yêu cầu đăng nhập đến API
+                const response = await axios.post(
+                    "http://localhost:8080/api/saving/login",
+                    {
+                        username: email,
+                        password,
+                    },
+                    config
+                );
+
+                // console.log(response);
+                setIsLogin();
+                // Lưu trữ token vào localStorage
+                localStorage.setItem("token", response.data.data.token);
+                // localStorage.setItem("isLogin", true);
+
+                window.location.href = "/";
+            } catch (error) {
+                console.error("Đăng nhập không thành công", error);
+            }
+        } else {
+            setErrorTong("Vui lòng điền đầy đủ và chính xác các thông tin !");
+        }
+    };
+    const handleKeyPress = (e) => {
+        if (e.key === "Enter") {
+            // Focus vào nút tính toán
+            calculateButtonRef.current.focus();
+            // Gọi hàm xử lý tính lãi
+            handleSubmit(e);
+        }
+    };
     return (
         <>
             <Helmet>
@@ -133,6 +154,7 @@ const LoginStaff = ({ isLogin }) => {
                         {/* <span className="text-gray-500 font-normal">OR</span> */}
                         <span className="h-px w-16 bg-gray-300"></span>
                     </div>
+                    <p className="error-messagess"> {errorTong}</p>
                     <form
                         className="mt-8 space-y-6"
                         onSubmit={handleSubmit}
@@ -150,17 +172,9 @@ const LoginStaff = ({ isLogin }) => {
                                 type="text"
                                 placeholder="admin"
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                onBlur={(e) =>
-                                    handleBlur("email", e.target.value)
-                                }
-                                // value="mail@gmail.com"
+                                onChange={handleChangeEmail}
                             />
-                            {errors.email && (
-                                <p className="text-red-500 text-sm mt-1">
-                                    {errors.email}
-                                </p>
-                            )}
+                            <p className="error-messagess"> {errorsEmail}</p>
                         </div>
                         <div className="mt-8 content-center">
                             <label className="text-left text-sm font-bold text-gray-700 tracking-wide">
@@ -171,21 +185,15 @@ const LoginStaff = ({ isLogin }) => {
                                 type="password"
                                 placeholder="Enter your password"
                                 value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                onBlur={(e) =>
-                                    handleBlur("password", e.target.value)
-                                }
-                                // value="*****|"
+                                onChange={handleChangePassword}
                             />
-                            {errors.password && (
-                                <p className="text-red-500 text-sm mt-1">
-                                    {errors.password}
-                                </p>
-                            )}
+                            <p className="error-messagess"> {errorsPassword}</p>
                         </div>
 
                         <div>
                             <button
+                                onClick={handleSubmit}
+                                ref={calculateButtonRef}
                                 type="submit"
                                 className="w-full mt-5 flex justify-center bg-indigo-500 text-gray-100 p-4 rounded-full tracking-wide font-semibold focus:outline-none focus:shadow-outline hover:bg-indigo-600 shadow-lg cursor-pointer transition ease-in duration-300"
                             >

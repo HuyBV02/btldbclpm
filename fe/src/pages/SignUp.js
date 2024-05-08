@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, json } from "react-router-dom";
 import axios from "axios";
 import { Helmet } from "react-helmet";
 
@@ -9,6 +9,14 @@ const SignUp = () => {
     const [maPin, setMaPin] = useState("");
     const [soDienThoai, setSoDienThoai] = useState("");
     const [errors, setErrors] = useState({});
+    const [errorsCccd, setErrorsCccd] = useState("");
+    const [errorsSothe, setErrorsSothe] = useState("");
+    const [errorsMapin, setErrorsMapin] = useState("");
+    const [isCccd, setIsCccd] = useState(false);
+    const [isSothe, setIsSothe] = useState(false);
+    const [isMapin, setIsMapin] = useState(false);
+    const [isSdt, setIsSdt] = useState(false);
+    const [errorsSdt, setErrorsSdt] = useState([]);
 
     const firstInputRef = useRef(null);
 
@@ -19,125 +27,110 @@ const SignUp = () => {
         }
     }, []);
 
-    const validateCccd = (value) => {
-        const cccdPattern = /^[0-9]{12}$/;
-        return cccdPattern.test(value);
-    };
-
-    const validateSoThe = (value) => {
-        const soThePattern = /^[0-9]{12}$/;
-        return soThePattern.test(value);
-    };
-
-    const validateMaPin = (value) => {
-        const maPinPattern = /^[0-9]{4}$/;
-        return maPinPattern.test(value);
-    };
-
-    const validateSoDienThoai = (value) => {
-        const soDienThoaiPattern = /^0[0-9]{9}$/;
-        return soDienThoaiPattern.test(value);
-    };
-
-    const handleBlur = (field, value) => {
-        let newErrors = { ...errors };
-
-        switch (field) {
-            case "cccd":
-                newErrors.cccd = !value
-                    ? "Vui lòng nhập CCCD!"
-                    : !validateCccd(value)
-                    ? "Vui lòng nhập CCCD hợp lệ!"
-                    : "";
-                break;
-            case "soThe":
-                newErrors.soThe = !value
-                    ? "Vui lòng nhập Số Thẻ!"
-                    : !validateSoThe(value)
-                    ? "Vui lòng nhập Số Thẻ hợp lệ!"
-                    : "";
-                break;
-            case "maPin":
-                newErrors.maPin = !value
-                    ? "Vui lòng nhập Mã PIN!"
-                    : !validateMaPin(value)
-                    ? "Vui lòng nhập Mã PIN hợp lệ!"
-                    : "";
-                break;
-            case "soDienThoai":
-                newErrors.soDienThoai = !value
-                    ? "Vui lòng nhập Số Điện Thoại!"
-                    : !validateSoDienThoai(value)
-                    ? "Vui lòng nhập Số Điện Thoại hợp lệ (bắt đầu bằng số 0)!"
-                    : "";
-                break;
-
-            default:
-                break;
+    const handleChangeCccd = (e) => {
+        let value = e.target.value;
+        // Loại bỏ tất cả các ký tự không phải số
+        value = value.replace(/\D/g, "");
+        // Giới hạn chiều dài của giá trị nhập vào là 12 ký tự
+        value = value.slice(0, 12);
+        if (value.length !== 12) {
+            setErrorsCccd("CCCD phải có đủ 12 số");
+            setCccd(false);
+        } else {
+            // Nếu có đủ 12 số, xóa thông báo lỗi
+            setErrorsCccd("");
+            setIsCccd(true);
         }
+        if (value.length == 12) setIsCccd(true);
+        setCccd(value);
+    };
+    const handleChangeSothe = (e) => {
+        let value = e.target.value;
+        // Kiểm tra nếu giá trị nhập vào không phải số thì không cập nhật state
+        value = value.replace(/\D/g, "");
+        value = value.slice(0, 12);
+        if (value.length !== 12) {
+            setErrorsSothe("Số thẻ phải có đủ 12 số");
+            setIsSothe(false);
+        } else {
+            // Nếu có đủ 12 số, xóa thông báo lỗi
+            setErrorsSothe("");
+            setIsSothe(true);
+        }
+        if (value.length == 12) setIsSothe(true);
+        setSoThe(value);
+    };
+    const handleChangeMapin = (e) => {
+        let value = e.target.value;
+        // Kiểm tra nếu giá trị nhập vào không phải số thì không cập nhật state
+        value = value.replace(/\D/g, "");
+        value = value.slice(0, 4);
+        if (value.length !== 4) {
+            setErrorsMapin("Mã pin có 4 chữ số");
+            setIsMapin(false);
+        } else {
+            setErrorsMapin("");
+            setIsMapin(true);
+        }
+        if (value.length == 4) setIsMapin(true);
+        setMaPin(value);
+    };
+    const handleChangeSdt = (e) => {
+        let value = e.target.value;
+        // Loại bỏ tất cả các ký tự không phải số
+        value = value.replace(/\D/g, "");
+        // Giới hạn chiều dài của giá trị nhập vào là 15 ký tự
+        value = value.slice(0, 10);
 
-        setErrors(newErrors);
+        // Kiểm tra xem giá trị nhập vào có số 0 ở đầu không
+        let errorMes = [];
+        if (value.charAt(0) !== "0") {
+            // setErrorsSdt("Số điện thoại phải chưa chính xác");
+            setIsSdt(false);
+            errorMes.push("Số điện thoại phải chưa chính xác . ");
+        } else if (value.length > 10) {
+            setIsSdt(false);
+            errorMes.push("Số điện thoại phải có 10 số");
+        }
+        if (value.charAt(0) == "0" && value.length == 10) {
+            setIsSdt(true);
+        }
+        console.log(isCccd);
+        setErrorsSdt(errorMes);
+        setSoDienThoai(value);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        let newErrors = {};
-
-        // Validate CCCD
-        if (!cccd || !validateCccd(cccd)) {
-            newErrors.cccd = "Vui lòng nhập CCCD!";
-        }
-
-        // Validate Số Thẻ
-        if (!soThe || !validateSoThe(soThe)) {
-            newErrors.soThe = "Vui lòng nhập Số Thẻ!";
-        }
-
-        // Validate Mã PIN
-        if (!maPin || !validateMaPin(maPin)) {
-            newErrors.maPin = "Vui lòng nhập Mã PIN!";
-        }
-
-        // Validate Số Điện Thoại
-        if (!soDienThoai || !validateSoDienThoai(soDienThoai)) {
-            newErrors.soDienThoai = "Vui lòng nhập Số Điện Thoại!";
-        }
-
-        // Set errors state
-        setErrors(newErrors);
-
-        // If there are errors, stop form submission
-        if (Object.keys(newErrors).length > 0) {
-            return;
-        }
-        const config = {
-            headers: {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods":
-                    "GET,PUT,POST,DELETE,PATCH,OPTIONS",
-            },
-        };
-        try {
-            // Send a POST request to your backend API endpoint with the form data
-            const response = await axios.post(
-                "http://localhost:8080/api/saving/register",
-                {
-                    identityCardNumber: cccd,
-                    accountNumber: soThe,
-                    pin: maPin,
-                    phoneNumber: soDienThoai,
+        if (isCccd && isMapin && isSdt && isSothe) {
+            const config = {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Methods":
+                        "GET,PUT,POST,DELETE,PATCH,OPTIONS",
                 },
-                config
-            );
+            };
+            try {
+                // Send a POST request to your backend API endpoint with the form data
+                const response = await axios.post(
+                    "http://localhost:8080/api/saving/register",
+                    {
+                        identityCardNumber: cccd,
+                        accountNumber: soThe,
+                        pin: maPin,
+                        phoneNumber: soDienThoai,
+                    },
+                    config
+                );
 
-            console.log("Response from backend:", response.data);
-            if (response.data.message === "Success") {
-                window.location.href = "/verify";
+                console.log("Response from backend:", response.data);
+                if (response.data.message === "Success") {
+                    window.location.href = "/verify";
+                }
+            } catch (error) {
+                console.log(error);
             }
-        } catch (error) {
-            console.log(error);
         }
     };
 
@@ -157,16 +150,12 @@ const SignUp = () => {
                 <div className="max-w-md w-full space-y-8 p-10 bg-white rounded-xl z-10">
                     <div className="text-center">
                         <h2 className="mt-6 text-3xl font-bold text-gray-900">
-                            Chào mừng quý khách
+                            ĐĂNG KÝ E-BANKING
                         </h2>
-                        {/* <p className="mt-2 text-sm text-gray-600">
-                            Vui lòng đăng nhập
-                        </p> */}
                     </div>
 
                     <div className="flex items-center justify-center space-x-2">
                         <span className="h-px w-16 bg-gray-300"></span>
-                        {/* <span className="text-gray-500 font-normal">OR</span> */}
                         <span className="h-px w-16 bg-gray-300"></span>
                     </div>
                     <form
@@ -186,16 +175,9 @@ const SignUp = () => {
                                 type="text"
                                 placeholder=""
                                 value={cccd}
-                                onChange={(e) => setCccd(e.target.value)}
-                                onBlur={(e) =>
-                                    handleBlur("cccd", e.target.value)
-                                }
+                                onChange={handleChangeCccd}
                             />
-                            {errors.cccd && (
-                                <p className="text-red-500 text-sm mt-1">
-                                    {errors.cccd}
-                                </p>
-                            )}
+                            <p className="error-messagess"> {errorsCccd}</p>
                         </div>
                         <div className="mt-8 content-center">
                             <label className="text-left text-sm font-bold text-gray-700 tracking-wide">
@@ -206,16 +188,9 @@ const SignUp = () => {
                                 type="text"
                                 placeholder=""
                                 value={soThe}
-                                onChange={(e) => setSoThe(e.target.value)}
-                                onBlur={(e) =>
-                                    handleBlur("soThe", e.target.value)
-                                }
+                                onChange={handleChangeSothe}
                             />
-                            {errors.soThe && (
-                                <p className="text-red-500 text-sm mt-1">
-                                    {errors.soThe}
-                                </p>
-                            )}
+                            <p className="error-messagess"> {errorsSothe}</p>
                         </div>
 
                         <div className="mt-8 content-center">
@@ -227,16 +202,9 @@ const SignUp = () => {
                                 type="password"
                                 placeholder=""
                                 value={maPin}
-                                onChange={(e) => setMaPin(e.target.value)}
-                                onBlur={(e) =>
-                                    handleBlur("maPin", e.target.value)
-                                }
+                                onChange={handleChangeMapin}
                             />
-                            {errors.maPin && (
-                                <p className="text-red-500 text-sm mt-1">
-                                    {errors.maPin}
-                                </p>
-                            )}
+                            <p className="error-messagess"> {errorsMapin}</p>
                         </div>
 
                         <div className="mt-8 content-center">
@@ -248,16 +216,9 @@ const SignUp = () => {
                                 type="text"
                                 placeholder=""
                                 value={soDienThoai}
-                                onChange={(e) => setSoDienThoai(e.target.value)}
-                                onBlur={(e) =>
-                                    handleBlur("soDienThoai", e.target.value)
-                                }
+                                onChange={handleChangeSdt}
                             />
-                            {errors.soDienThoai && (
-                                <p className="text-red-500 text-sm mt-1">
-                                    {errors.soDienThoai}
-                                </p>
-                            )}
+                            <p className="error-messagess"> {errorsSdt}</p>
                         </div>
 
                         <div>

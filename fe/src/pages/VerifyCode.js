@@ -8,8 +8,15 @@ const VerifyCode = ({ userData, isLogin }) => {
     const [password, setPassword] = useState("");
     const [code, setCode] = useState("");
     const [cccd, setCccd] = useState("");
-    const [errors, setErrors] = useState({});
-
+    const [errors, setErrors] = useState("true");
+    const [errorsEmail, setErrorsEmail] = useState([]);
+    const [errorsPassword, setErrorsPassword] = useState([]);
+    const [errorsMaOtp, setErrorsMaOtp] = useState("");
+    const [errorsCccd, setErrorsCccd] = useState("");
+    const [isUsert, setIsUser] = useState(false);
+    const [isPassword, setIsPassword] = useState(false);
+    const [isMaOtp, setIsMaOtp] = useState(false);
+    const [isCccd, setIsCccd] = useState(false);
     const firstInputRef = useRef(null);
 
     // Sử dụng useEffect để đặt focus vào input đầu tiên khi component được tải
@@ -20,111 +27,125 @@ const VerifyCode = ({ userData, isLogin }) => {
     }, []);
 
     console.log({ email, password, code, cccd });
-
-    const validateCccd = (value) => {
-        const cccdPattern = /^[0-9]{12}$/;
-        return cccdPattern.test(value);
+    const handleChangeEmail = (e) => {
+        let value = e.target.value;
+        value = value.replace(/[^a-zA-Z0-9]/g, "");
+        value = value.slice(0, 20);
+        if (value.length <= 6) {
+            setErrorsEmail("Uesname phải có tối thiểu 6 kí tự");
+            setIsUser(false);
+        } else {
+            setErrorsEmail("");
+        }
+        if (value.length >= 6) setIsUser(true);
+        setEmail(value);
     };
-
-    const validateMaCode = (value) => {
-        const maPinPattern = /^[0-9]{6}$/;
-        return maPinPattern.test(value);
-    };
-
-    const validatePassword = (value) => {
-        const minLength = 8;
+    const handleChangePassword = (e) => {
+        let value = e.target.value;
+        value = value.replace(/[^a-zA-Z0-9]/g, "");
+        value = value.slice(0, 20);
+        // Kiểm tra độ dài tối thiểu là 6 ký tự
+        const isLengthValid = value.length >= 6;
+        // Kiểm tra có ít nhất một ký tự in hoa
         const hasUppercase = /[A-Z]/.test(value);
+        // Kiểm tra có ít nhất một ký tự số
         const hasNumber = /[0-9]/.test(value);
 
-        let errorMessage = "";
+        // Nếu mật khẩu không đáp ứng yêu cầu
+        if (!isLengthValid || !hasUppercase || !hasNumber) {
+            // Tạo một mảng để chứa các thông báo lỗi
+            let errorMessages = [];
 
-        if (value.length < minLength) {
-            errorMessage = "Mật khẩu không hợp lệ (tối thiểu 8 kí tự)";
-        } else if (!hasUppercase) {
-            errorMessage = "Mật khẩu không hợp lệ (phải chứa kí tự in hoa)";
-        } else if (!hasNumber) {
-            errorMessage = "Mật khẩu không hợp lệ (phải chứa kí tự số)";
+            // Kiểm tra từng yêu cầu và thêm thông báo lỗi tương ứng vào mảng
+            if (!isLengthValid) {
+                setIsPassword(false);
+                errorMessages.push("Mật khẩu phải chứa ít nhất 6 ký tự");
+            }
+            if (!hasUppercase) {
+                setIsPassword(false);
+                errorMessages.push("Mật khẩu phải chứa ít nhất 1 ký tự in hoa");
+            }
+            if (!hasNumber) {
+                setIsPassword(false);
+                errorMessages.push("Mật khẩu phải chứa ít nhất 1 ký tự số");
+            }
+
+            // Cập nhật state errors với mảng thông báo lỗi
+            setErrorsPassword(errorMessages.join(", "));
+        } else {
+            // Nếu mật khẩu đáp ứng yêu cầu, xóa thông báo lỗi
+            setErrorsPassword("");
         }
-
-        return errorMessage;
-    };
-
-    const validateUsername = (value) => {
-        const minLength = 8;
-        return value.length < minLength
-            ? "Tên đăng nhập phải ít nhất 8 kí tự!"
-            : "";
-    };
-
-    const handleBlur = (field, value) => {
-        let newErrors = { ...errors };
-
-        switch (field) {
-            case "cccd":
-                newErrors.cccd = !value
-                    ? "Vui lòng nhập CCCD!"
-                    : !validateCccd(value)
-                    ? "Vui lòng nhập CCCD hợp lệ!"
-                    : "";
-                break;
-            case "email":
-                newErrors.email = !value
-                    ? "Vui lòng nhập tên đăng nhập!"
-                    : validateUsername(value);
-                break;
-            // case "password":
-            //     newErrors.password = !value ? "Vui lòng nhập mật khẩu!" : "";
-            //     break;
-            case "code":
-                newErrors.code = !value
-                    ? "Vui lòng nhập Mã OTP!"
-                    : !validateMaCode(value)
-                    ? "Vui lòng nhập Mã OTP hợp lệ!"
-                    : "";
-                break;
-            case "password":
-                newErrors.password = !value
-                    ? "Vui lòng nhập mật khẩu!"
-                    : validatePassword(value);
-                break;
-
-            default:
-                break;
+        if (isLengthValid && hasUppercase && hasNumber) {
+            setIsPassword(true);
         }
-
-        setErrors(newErrors);
+        setPassword(value);
+    };
+    const handleChangeMaOtp = (e) => {
+        let value = e.target.value;
+        value = value.replace(/\D/g, "");
+        value = value.slice(0, 6);
+        if (value.length !== 6) {
+            setErrorsMaOtp("Mã OTP có đủ 6 số");
+            setIsMaOtp(false);
+        } else {
+            setErrorsMaOtp("");
+        }
+        if (value.length == 6) {
+            setIsMaOtp(true);
+        }
+        setCode(value);
+    };
+    const handleChangeCccd = (e) => {
+        let value = e.target.value;
+        // Loại bỏ tất cả các ký tự không phải số
+        value = value.replace(/\D/g, "");
+        // Giới hạn chiều dài của giá trị nhập vào là 12 ký tự
+        value = value.slice(0, 12);
+        if (value.length !== 12) {
+            setErrorsCccd("CCCD phải có đủ 12 số");
+            setIsCccd(false);
+        } else {
+            // Nếu có đủ 12 số, xóa thông báo lỗi
+            setErrorsCccd("");
+        }
+        if (value.length == 12) {
+            setIsCccd(true);
+        }
+        setCccd(value);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        const config = {
-            headers: {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods":
-                    "GET,PUT,POST,DELETE,PATCH,OPTIONS",
-            },
-        };
-        try {
-            // Send a POST request to your backend API endpoint with the form data
-            const response = await axios.post(
-                "http://localhost:8080/api/saving/verify",
-                {
-                    username: email,
-                    password,
-                    code,
-                    identityCardNumber: cccd,
+        if (isCccd && isMaOtp && isPassword && isUsert) {
+            const config = {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Methods":
+                        "GET,PUT,POST,DELETE,PATCH,OPTIONS",
                 },
-                config
-            );
+            };
+            try {
+                // Send a POST request to your backend API endpoint with the form data
+                const response = await axios.post(
+                    "http://localhost:8080/api/saving/verify",
+                    {
+                        username: email,
+                        password,
+                        code,
+                        identityCardNumber: cccd,
+                    },
+                    config
+                );
 
-            console.log("Response from backend:", response.data);
-            if (response.data.message === "Success") {
-                window.location.href = "/login";
+                console.log("Response from backend:", response.data);
+                if (response.data.message === "Success") {
+                    window.location.href = "/login";
+                }
+            } catch (error) {
+                console.log(error);
             }
-        } catch (error) {
-            console.log(error);
         }
     };
 
@@ -171,16 +192,9 @@ const VerifyCode = ({ userData, isLogin }) => {
                                 type="text"
                                 placeholder=""
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                onBlur={(e) =>
-                                    handleBlur("email", e.target.value)
-                                }
+                                onChange={handleChangeEmail}
                             />
-                            {errors.email && (
-                                <p className="text-red-500 text-sm mt-1">
-                                    {errors.email}
-                                </p>
-                            )}
+                            <p className="error-messagess"> {errorsEmail}</p>
                         </div>
                         <div className="mt-8 content-center">
                             <label className="text-left text-sm font-bold text-gray-700 tracking-wide">
@@ -191,16 +205,9 @@ const VerifyCode = ({ userData, isLogin }) => {
                                 type="password"
                                 placeholder=""
                                 value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                onBlur={(e) =>
-                                    handleBlur("password", e.target.value)
-                                }
+                                onChange={handleChangePassword}
                             />
-                            {errors.password && (
-                                <p className="text-red-500 text-sm mt-1">
-                                    {errors.password}
-                                </p>
-                            )}
+                            <p className="error-messagess"> {errorsPassword}</p>
                         </div>
 
                         <div className="mt-8 content-center">
@@ -212,16 +219,9 @@ const VerifyCode = ({ userData, isLogin }) => {
                                 type="text"
                                 placeholder=""
                                 value={code}
-                                onChange={(e) => setCode(e.target.value)}
-                                onBlur={(e) =>
-                                    handleBlur("code", e.target.value)
-                                }
+                                onChange={handleChangeMaOtp}
                             />
-                            {errors.code && (
-                                <p className="text-red-500 text-sm mt-1">
-                                    {errors.code}
-                                </p>
-                            )}
+                            <p className="error-messagess"> {errorsMaOtp}</p>
                         </div>
 
                         <div className="mt-8 content-center">
@@ -233,16 +233,9 @@ const VerifyCode = ({ userData, isLogin }) => {
                                 type="text"
                                 placeholder=""
                                 value={cccd}
-                                onChange={(e) => setCccd(e.target.value)}
-                                onBlur={(e) =>
-                                    handleBlur("cccd", e.target.value)
-                                }
+                                onChange={handleChangeCccd}
                             />
-                            {errors.cccd && (
-                                <p className="text-red-500 text-sm mt-1">
-                                    {errors.cccd}
-                                </p>
-                            )}
+                            <p className="error-messagess"> {errorsCccd}</p>
                         </div>
 
                         <div>
