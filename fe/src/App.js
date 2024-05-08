@@ -24,6 +24,8 @@ function App() {
         localStorage.getItem("isLogin") == "true"
     );
 
+    const [balance, setBalance] = useState();
+
     const [currentBookChoice, setCurrentBookChoice] = useState();
 
     // const [idCustomer, setIdCustomer] = useState();
@@ -42,10 +44,14 @@ function App() {
         .then((response) => {
             localStorage.setItem("idCustomer", response.data.data.id);
             localStorage.setItem("nameCustomer", response.data.data.fullName);
+            setBalance(response.data.data.balance)
+
         })
         .catch((error) => {
             console.error("Error fetching data:", error);
         });
+
+        console.log(balance)
 
     // setIdCustomer(localStorage.getItem("idCustomer"));
     // setNameCustomer(localStorage.getItem("nameCustomer"));
@@ -143,7 +149,7 @@ function App() {
                             path="/mo-so"
                             element={
                                 isLogin ? (
-                                    <OpenSavingsBook />
+                                    <OpenSavingsBook balance={balance}/>
                                 ) : (
                                     <Navigate to="/login" />
                                 )

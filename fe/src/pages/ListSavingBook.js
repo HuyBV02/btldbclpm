@@ -104,8 +104,13 @@ const ListSavingBook = ({ currentBookChoice, setCurrentBookChoice }) => {
                             <tbody class="bg-white">
                                 {savingBook?.length > 0 ? (
                                     savingBook?.map((item) => {
+                                        // Kiểm tra nếu số dư bằng 0 thì không hiển thị hàng này
+                                        if (item.amount === 0) {
+                                            return null;
+                                        }
+
                                         return (
-                                            <tr>
+                                            <tr key={item.id}>
                                                 <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                                                     <div class="flex items-center">
                                                         <div>
@@ -130,10 +135,7 @@ const ListSavingBook = ({ currentBookChoice, setCurrentBookChoice }) => {
                                                         .format(
                                                             "YYYY-MM-DD HH:mm:ss"
                                                         )}
-
-                                                    {/* {item.createdAt} */}
                                                 </td>
-
                                                 <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-500 text-sm leading-5">
                                                     <button
                                                         data-id={item.id}

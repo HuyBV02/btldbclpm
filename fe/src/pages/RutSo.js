@@ -8,7 +8,8 @@ function RutSo({ currentBookChoice }) {
     const [showModal, setShowModal] = useState(false);
     const [tokenVerify, setTokenVerify] = useState();
     const [code, setCode] = useState();
-
+    const [isMaOtp, setIsMaOtp] = useState(false);
+    const [errorsMaOtp, setErrorsMaOtp] = useState("");
     // console.log(currentBookChoice.id)
 
     const handleSubmit = async (event) => {
@@ -48,7 +49,7 @@ function RutSo({ currentBookChoice }) {
             );
             if (response.data.message === "Success") {
                 setShowModal(true);
-                console.log(response.data.data.shortTokenRecip)
+                console.log(response.data.data.shortTokenRecip);
                 setTokenVerify(response.data.data.shortTokenRecip);
             }
             console.log(response.data);
@@ -78,6 +79,21 @@ function RutSo({ currentBookChoice }) {
     }, []);
 
     console.log(code);
+    const handleChangeMaOtp = (e) => {
+        let value = e.target.value;
+        value = value.replace(/\D/g, "");
+        value = value.slice(0, 6);
+        if (value.length !== 6) {
+            setErrorsMaOtp("Mã OTP có đủ 6 số");
+            setIsMaOtp(false);
+        } else {
+            setErrorsMaOtp("");
+        }
+        if (value.length == 6) {
+            setIsMaOtp(true);
+        }
+        setCode(value);
+    };
     const handleSubmitCode = async (e) => {
         e.preventDefault();
 
@@ -152,6 +168,7 @@ function RutSo({ currentBookChoice }) {
                     <label className="block mb-2">
                         Thời gian:
                         <input
+                            readOnly
                             type="datetime-local"
                             value={createdAt.slice(0, 16)}
                             onChange={(e) => setCreatedAt(e.target.value)}
@@ -182,10 +199,13 @@ function RutSo({ currentBookChoice }) {
                         </h2>
                         <form onSubmit={handleSubmitCode}>
                             <input
-                                type="number"
-                                onChange={(e) => setCode(e.target.value)}
+                                type="text"
                                 required
+                                placeholder="Nhập OTP"
+                                value={code}
+                                onChange={handleChangeMaOtp}
                             />
+                            <p className="error-messagess"> {errorsMaOtp}</p>
                             <div className="flex justify-end mt-4">
                                 <button
                                     onClick={() => setShowModal(false)}
